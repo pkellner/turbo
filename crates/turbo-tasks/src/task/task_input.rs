@@ -306,8 +306,8 @@ where
 {
     fn try_from_concrete(input: &ConcreteTaskInput) -> Result<Self> {
         match input {
-            ConcreteTaskInput::SharedReference(reference) => {
-                if let Ok(i) = reference.1.clone().try_into() {
+            ConcreteTaskInput::TransientSharedReference(reference) => {
+                if let Ok(i) = reference.to_owned().try_into() {
                     Ok(i)
                 } else {
                     bail!(

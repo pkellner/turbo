@@ -22,7 +22,6 @@ use turbo_tasks::{
     test_helpers::with_turbo_tasks_for_testing,
     util::{SharedError, StaticOrArc},
     CellId, InvalidationReason, RawVc, TaskId, TraitTypeId, TurboTasksApi, TurboTasksCallApi,
-    ValueTypeId,
 };
 
 enum Task {

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, sync::Arc};
 
 use anyhow::{Context, Result};
 use async_trait::async_trait;
@@ -33,7 +33,7 @@ pub enum RelayLanguage {
 
 #[derive(Debug)]
 pub struct RelayTransformer {
-    config: swc_relay::Config,
+    config: Arc<swc_relay::Config>,
     project_path: FileSystemPath,
 }
 
@@ -53,7 +53,7 @@ impl RelayTransformer {
         };
 
         Self {
-            config: options,
+            config: options.into(),
             project_path: project_path.clone(),
         }
     }
@@ -78,13 +78,14 @@ impl CustomTransformer for RelayTransformer {
         } else {
             swc_relay::Config {
                 artifact_directory: Some(PathBuf::from("__generated__")),
-                ..self.config
+                ..(*self.config).clone()
             }
+            .into()
         };
 
         let p = std::mem::replace(program, Program::Module(Module::dummy()));
         *program = p.fold_with(&mut swc_relay::relay(
-            &config,
+            config,
             FileName::Real(PathBuf::from(ctx.file_name_str)),
             path_to_proj,
             // [TODO]: pages_dir comes through next-swc-loader
